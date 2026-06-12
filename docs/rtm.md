@@ -15,5 +15,7 @@ touches a requirement. IDs carry over from SRD v3.0 (FR-xx) and MTP v1.0
 | FR-10 | SRD 3.3 | SoA toggles with mandatory justification | `modules/controls` (M3) | — | ⬜ M3 |
 | FR-13/14 | SRD 3.4 | Evidence ingest with SHA-256 integrity | `modules/evidence` (M4) | — | ⬜ M4 |
 | FR-15 | SRD 3.4 | Evidence traceability chain | `modules/evidence` (M4) | — | ⬜ M4 |
-| NFR-01 | SRD 5.1 | Append-only tamper-evident audit log | `modules/audit` (M1) | — | ⬜ M1 |
+| NFR-01 | SRD 5.1 | Append-only tamper-evident audit log | `modules/audit` + migration 0002 (`priora_app` role + trigger) | `src/modules/audit/append-only.integration.test.ts` (5 assertions, both layers) + `src/modules/audit/record.test.ts` | ✅ M1 |
+| M1-01 | Contract §3 | RBAC matrix — auditor provably read-only | `modules/identity/rbac` | `src/modules/identity/rbac.test.ts` (exhaustive role×action sweep) | ✅ M1 |
+| M1-02 | Spec §5 | Credentials auth, JWT sessions carrying id+role, audited sign-in | `lib/auth*`, `middleware` | scripted login smoke (M1 Task 8) + `auth.login` audit row | ✅ M1 |
 | FR-01 | SRD 3.1 | Portfolio dashboard: phase + gate status of all projects | `app/(dashboard)` (M5) | — | ⬜ M5 |
