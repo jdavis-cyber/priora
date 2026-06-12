@@ -15,6 +15,13 @@
       "when": 1781227871197,
       "tag": "0001_domain-schema",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781228449321,
+      "tag": "0002_audit-log-append-only",
+      "breakpoints": true
     }
   ]
 }
