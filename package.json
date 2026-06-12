@@ -13,7 +13,8 @@
     "db:check": "drizzle-kit generate && git diff --exit-code -- src/db/migrations",
     "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "seed": "tsx seed/index.ts"
+    "seed": "tsx seed/index.ts",
+    "seed:controls": "tsx seed/seed-controls.ts"
   },
   "dependencies": {
     "bcryptjs": "3.0.3",

@@ -7,6 +7,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "../src/db/schema";
 import { appMeta, users } from "../src/db/schema";
+import { seedControls } from "./seed-controls";
 
 const SEED_VERSION = "1";
 const BCRYPT_ROUNDS = 12; // spec/contract: bcryptjs, 12 rounds
@@ -56,6 +57,10 @@ async function main() {
 
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   const db = drizzle(pool, { schema });
+
+  // Control library first — the SoA clone at project creation depends on it.
+  await seedControls(db);
+
   const passwordHash = hashSync(TEST_PASSWORD, BCRYPT_ROUNDS);
 
   for (const u of TEST_USERS) {
