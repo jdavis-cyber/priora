@@ -12,9 +12,11 @@
     "db:migrate": "drizzle-kit migrate",
     "db:check": "drizzle-kit generate && git diff --exit-code -- src/db/migrations",
     "test": "vitest run",
-    "test:integration": "vitest run --config vitest.integration.config.ts"
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "seed": "tsx seed/index.ts"
   },
   "dependencies": {
+    "bcryptjs": "3.0.3",
     "dotenv": "17.4.2",
     "drizzle-orm": "0.45.2",
     "next": "16.2.9",
@@ -32,6 +34,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
+    "tsx": "4.22.4",
     "typescript": "^6",
     "vitest": "4.1.8"
   }
