@@ -17,6 +17,7 @@
     "seed:controls": "tsx seed/seed-controls.ts"
   },
   "dependencies": {
+    "archiver": "8.0.0",
     "bcryptjs": "3.0.3",
     "dotenv": "17.4.2",
     "drizzle-orm": "0.45.2",
@@ -29,10 +30,13 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/adm-zip": "0.5.8",
+    "@types/archiver": "8.0.0",
     "@types/node": "^25",
     "@types/pg": "8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "adm-zip": "0.5.17",
     "drizzle-kit": "0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",

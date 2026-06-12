@@ -40,3 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 !.env.example
+
+# Local-fs storage driver root (contract §4) — contents never committed
+var/storage/*
+!var/storage/.gitkeep
