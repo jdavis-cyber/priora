@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+  pull-requests: read   # gitleaks-action reads PR commits on pull_request events
+
 jobs:
   ci:
     name: ci
