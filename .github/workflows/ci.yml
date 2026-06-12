@@ -15,7 +15,9 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # Matches the dev machine's Node major — the package-lock is written
+          # by npm 11; older npm versions reject its resolution as out-of-sync.
+          node-version: 25
           cache: npm
       - run: npm ci
       - name: Typecheck
