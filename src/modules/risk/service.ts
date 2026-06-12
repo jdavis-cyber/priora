@@ -4,7 +4,7 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import type { Db } from "@/db";
-import { riskControlLinks, risks } from "@/db/schema";
+import { riskAcceptances, riskControlLinks, risks } from "@/db/schema";
 import { recordAudit } from "@/modules/audit/record";
 
 export const riskBaseSchema = z.object({
@@ -109,6 +109,45 @@ export async function updateRiskRecord(
       entityId: riskId,
       before,
       after: { ...after, soaEntryIds: input.soaEntryIds },
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Residual risk acceptance (thin v1 — spec §4/§5). Accepting authority only;
+// full review-cycle workflow is v2.
+// ---------------------------------------------------------------------------
+
+export async function acceptRiskRecord(
+  dbc: Db,
+  actorId: string,
+  riskId: string,
+  input: { rationale: string; reviewBy?: Date },
+): Promise<void> {
+  await dbc.transaction(async (tx) => {
+    const [before] = await tx.select().from(risks).where(eq(risks.id, riskId));
+    if (!before) throw new Error("Risk not found");
+    const [acceptance] = await tx
+      .insert(riskAcceptances)
+      .values({
+        riskId,
+        rationale: input.rationale,
+        acceptedById: actorId,
+        reviewBy: input.reviewBy ?? null,
+      })
+      .returning();
+    const [after] = await tx
+      .update(risks)
+      .set({ status: "accepted" })
+      .where(eq(risks.id, riskId))
+      .returning();
+    await recordAudit(tx, {
+      actorId,
+      action: "risk.accept",
+      entityType: "risk",
+      entityId: riskId,
+      before,
+      after: { ...after, acceptanceId: acceptance.id },
     });
   });
 }
