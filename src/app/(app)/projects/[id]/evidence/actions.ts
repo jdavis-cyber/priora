@@ -1,11 +1,14 @@
 "use server";
 
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/db";
+import { evidenceLinks } from "@/db/schema";
 import { isArtifactTypeId } from "@/lib/artifact-types";
 import { auth } from "@/lib/auth";
 import { storage } from "@/lib/storage";
+import { recordAudit } from "@/modules/audit/record";
 import { can, type Role } from "@/modules/identity/rbac";
 import {
   ingestEvidence,
@@ -129,4 +132,96 @@ export async function verifyEvidenceAction(
       error: e instanceof Error ? e.message : "Verification failed",
     };
   }
+}
+
+const addLinkFields = z.object({
+  evidenceId: z.string().uuid(),
+  projectId: z.string().uuid(),
+  // encoded as "<targetType>:<uuid>" by the single combined select
+  target: z
+    .string()
+    .regex(/^(control|gate|risk):[0-9a-f-]{36}$/, "Pick a link target"),
+});
+
+export async function addEvidenceLinkAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const session = await auth();
+  if (!session?.user) return { ok: false, error: "Not authenticated" };
+  if (!can(session.user.role as Role, "evidence.ingest")) {
+    return { ok: false, error: "Your role cannot edit evidence links" };
+  }
+  const parsed = addLinkFields.safeParse({
+    evidenceId: formData.get("evidenceId"),
+    projectId: formData.get("projectId"),
+    target: formData.get("target"),
+  });
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0].message };
+  const [targetType, targetId] = parsed.data.target.split(":") as [
+    "control" | "gate" | "risk",
+    string,
+  ];
+
+  await db
+    .insert(evidenceLinks)
+    .values({ evidenceId: parsed.data.evidenceId, targetType, targetId })
+    .onConflictDoNothing();
+  await recordAudit(db, {
+    actorId: session.user.id,
+    action: "evidence.link_add",
+    entityType: "evidence_link",
+    entityId: parsed.data.evidenceId,
+    after: { targetType, targetId },
+  });
+  revalidatePath(`/projects/${parsed.data.projectId}/evidence`);
+  return { ok: true };
+}
+
+export async function removeEvidenceLinkAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const session = await auth();
+  if (!session?.user) return { ok: false, error: "Not authenticated" };
+  if (!can(session.user.role as Role, "evidence.ingest")) {
+    return { ok: false, error: "Your role cannot edit evidence links" };
+  }
+  const parsed = z
+    .object({ linkId: z.string().uuid(), projectId: z.string().uuid() })
+    .safeParse({
+      linkId: formData.get("linkId"),
+      projectId: formData.get("projectId"),
+    });
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0].message };
+
+  const [removed] = await db
+    .delete(evidenceLinks)
+    .where(eq(evidenceLinks.id, parsed.data.linkId))
+    .returning();
+  if (removed) {
+    await recordAudit(db, {
+      actorId: session.user.id,
+      action: "evidence.link_remove",
+      entityType: "evidence_link",
+      entityId: removed.evidenceId,
+      before: { targetType: removed.targetType, targetId: removed.targetId },
+    });
+  }
+  revalidatePath(`/projects/${parsed.data.projectId}/evidence`);
+  return { ok: true };
+}
+
+// Void-returning wrappers for plain <form action={...}> usage in server
+// components (form actions must return void; errors surface via revalidation).
+export async function addEvidenceLinkFormAction(
+  formData: FormData,
+): Promise<void> {
+  await addEvidenceLinkAction(formData);
+}
+
+export async function removeEvidenceLinkFormAction(
+  formData: FormData,
+): Promise<void> {
+  await removeEvidenceLinkAction(formData);
 }

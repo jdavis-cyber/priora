@@ -12,6 +12,7 @@ import {
   soaEntries,
   users,
 } from "@/db/schema";
+import { LinkEditor } from "./link-editor";
 import { UploadForm, type LinkOption } from "./upload-form";
 import { VerifyButton } from "./verify-button";
 
@@ -97,6 +98,15 @@ export default async function EvidencePage({
     label: r.title,
   }));
 
+  const targetOptions = [
+    ...controlOptions.map((o) => ({ value: `control:${o.id}`, label: o.label })),
+    ...gateOptions.map((o) => ({ value: `gate:${o.id}`, label: o.label })),
+    ...riskOptions.map((o) => ({
+      value: `risk:${o.id}`,
+      label: `Risk: ${o.label}`,
+    })),
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -148,14 +158,19 @@ export default async function EvidencePage({
                 </span>
               </td>
               <td className="py-2 pr-3 text-xs">
-                {links
-                  .filter((l) => l.evidenceId === e.id)
-                  .map((l) => (
-                    <div key={l.id}>
-                      {refByTarget.get(l.targetId) ??
-                        `${l.targetType}:${l.targetId.slice(0, 8)}`}
-                    </div>
-                  ))}
+                <LinkEditor
+                  evidenceId={e.id}
+                  projectId={projectId}
+                  existing={links
+                    .filter((l) => l.evidenceId === e.id)
+                    .map((l) => ({
+                      id: l.id,
+                      label:
+                        refByTarget.get(l.targetId) ??
+                        `${l.targetType}:${l.targetId.slice(0, 8)}`,
+                    }))}
+                  options={targetOptions}
+                />
               </td>
               <td className="py-2">
                 <VerifyButton evidenceId={e.id} />
