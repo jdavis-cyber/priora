@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Priora
 
-## Getting Started
+> **Priora** (pree-OR-uh, Latin: *"the things that come before"*) — an AI
+> lifecycle governance platform operationalizing
+> *The Decisions That Come Before Scale: An AI Lifecycle Playbook for
+> Regulated Environments*.
 
-First, run the development server:
+Priora is a single system of record for AI governance: every AI project's
+position in the CPMAI lifecycle (Phases I–VI, tri-state phase gates), living
+risk and control registers, hash-verified evidence, and one-click
+**Automated Evidence Package (AEP)** generation for auditors.
+
+**Status:** M0 complete — governed repo bootstrap verified. Domain modules land M1–M5.
+
+## Why it exists
+
+Most organizations govern AI with static policies, spreadsheets, and
+after-the-fact reviews. Priora makes governance an execution layer:
+decisions are recorded where they happen, evidence is born traceable, and
+audit readiness is a button, not a quarter.
+
+## Architecture
+
+Modular monolith — Next.js 15 (App Router) + TypeScript, PostgreSQL +
+Drizzle. Domain logic lives in `src/modules/*` as framework-independent,
+requirement-traced functions. See [ADR-0001](docs/adr/0001-modular-monolith-supersedes-legacy-architectures.md)
+and [ADR-0002](docs/adr/0002-technology-stack.md).
+
+## Engineering standards
+
+- **TDD with requirement-named tests** — [docs/rtm.md](docs/rtm.md) traces
+  requirement → module → test
+- **Signed commits, protected main, CI-gated merges** — the repo practices
+  the phase-gate discipline the product enforces
+- **ADRs for every load-bearing decision** — [docs/adr/](docs/adr/)
+- **Schema drift check** — migrations are mandatory, reviewed SQL
+
+## Roadmap
+
+| Phase | Scope |
+|---|---|
+| **v1 (M1–M6)** | Decision/evidence layer: lifecycle engine + gates, risk register (3×3, 7 domains), SoA, evidence locker (SHA-256), AEP generator, mission dashboard, RBAC + append-only audit log, hosted demo |
+| **v2** | MRP wizard, risk-acceptance workflow, reciprocity & inheritance register, governance cadence calendar, material change evaluation, maturity scoring |
+| **v3 (tracking DoD CSRMC as it matures)** | Continuous Compliance Validation (CCV) engine, Automated Control Validation Ruleset (ACVR), telemetry ingestion, incident ticketing, supplier & competency management |
+
+## Local development
 
 ```bash
+cp .env.example .env
+docker compose up -d        # Postgres 17
+npm ci
+npm run db:migrate
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`npm test` · `npm run typecheck` · `npm run lint` · `npm run db:check`
