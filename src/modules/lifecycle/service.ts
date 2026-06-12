@@ -1,6 +1,6 @@
 // Lifecycle orchestration: loads state, applies pure rules (./rules), persists,
 // audits. Server actions are thin wrappers around these functions.
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import type { Db } from "@/db";
 import { correctiveActions, gates, phases, projects } from "@/db/schema";
@@ -48,6 +48,12 @@ export async function createProject(db: Db, actor: Actor, input: unknown) {
         .returning();
       await tx.insert(gates).values({ phaseId: phase.id });
     }
+    // FR-10: clone the control library into the project's SoA (defaults —
+    // applicable / '' / not_implemented — come from the schema).
+    await tx.execute(sql`
+      INSERT INTO soa_entries (project_id, control_id)
+      SELECT ${project.id}, id FROM controls
+    `);
     await recordAudit(tx, {
       actorId: actor.id,
       action: "project.create",
