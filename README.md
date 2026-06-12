@@ -10,7 +10,7 @@ position in the CPMAI lifecycle (Phases I–VI, tri-state phase gates), living
 risk and control registers, hash-verified evidence, and one-click
 **Automated Evidence Package (AEP)** generation for auditors.
 
-**Status:** M0 complete — governed repo bootstrap verified. Domain modules land M1–M5.
+**Status:** M1 complete — full domain schema, auth, RBAC, and DB-enforced append-only audit log. Lifecycle engine lands in M2.
 
 ## Why it exists
 
