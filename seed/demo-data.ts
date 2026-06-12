@@ -11,6 +11,8 @@ export const DEMO_USERS = [
   { email: "felix.okafor@priora.demo", name: "Felix Okafor", role: "ml_engineer" },
   { email: "dana.whitfield@priora.demo", name: "Dana Whitfield", role: "risk_officer" },
   { email: "sam.aldous@priora.demo", name: "Sam Aldous", role: "auditor" },
+  // The one non-fictional account: the product owner's own demo login.
+  { email: "jdavis.cyber@gmail.com", name: "Jerome Davis", role: "governance_lead" },
 ] as const;
 
 // ---------------------------------------------------------------------------
