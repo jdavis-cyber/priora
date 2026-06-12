@@ -6,7 +6,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { db } from "@/db";
 import { auditLog, riskControlLinks, risks, soaEntries, users } from "@/db/schema";
 import { createProject } from "@/modules/lifecycle/service";
-import { createRiskRecord, updateRiskRecord } from "@/app/(app)/risks/actions";
+import { createRiskRecord, updateRiskRecord } from "@/modules/risk/service";
 import { seedControls } from "../../seed/seed-controls";
 
 describe("risk CRUD core (integration)", () => {
