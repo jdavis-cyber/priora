@@ -3,10 +3,11 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import type { Db } from "@/db";
-import { gates, phases, projects } from "@/db/schema";
+import { correctiveActions, gates, phases, projects } from "@/db/schema";
 import { MAX_PHASE, MIN_PHASE } from "@/lib/phases";
 import { recordAudit } from "@/modules/audit/record";
 import { can, type Role } from "@/modules/identity/rbac";
+import { canDecideGate } from "./rules";
 
 export type Actor = { id: string; role: Role };
 
@@ -112,6 +113,83 @@ export async function archiveProject(db: Db, actor: Actor, input: unknown) {
       action: "project.archive",
       entityType: "project",
       entityId: projectId,
+      before,
+      after,
+    });
+    return after;
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Gate decision (FR-06: tri-state, authorized roles only, conditions tracked)
+// ---------------------------------------------------------------------------
+
+export const decideGateSchema = z
+  .object({
+    gateId: z.string().uuid(),
+    decision: z.enum(["approved", "conditionally_approved", "not_approved"]),
+    rationale: z.string().min(1, "rationale is required"),
+    correctiveActions: z
+      .array(
+        z.object({
+          description: z.string().min(1, "description is required"),
+          dueDate: z.coerce.date(),
+        }),
+      )
+      .default([]),
+  })
+  .superRefine((val, ctx) => {
+    if (
+      val.decision === "conditionally_approved" &&
+      val.correctiveActions.length === 0
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["correctiveActions"],
+        message:
+          "conditionally_approved requires at least one corrective action (description + due date)",
+      });
+    }
+  });
+
+// Re-deciding an already-decided gate is permitted in v1 (the before/after audit
+// diff preserves the full history); corrective actions supplied with
+// approved/not_approved are ignored, not created.
+export async function decideGate(db: Db, actor: Actor, input: unknown) {
+  if (!canDecideGate(actor.role)) {
+    throw new Error(`forbidden: ${actor.role} may not gate.decide`);
+  }
+  const data = decideGateSchema.parse(input);
+  return db.transaction(async (tx) => {
+    const [before] = await tx
+      .select()
+      .from(gates)
+      .where(eq(gates.id, data.gateId));
+    if (!before) throw new Error("gate not found");
+    const [after] = await tx
+      .update(gates)
+      .set({
+        decision: data.decision,
+        rationale: data.rationale,
+        decidedById: actor.id,
+        decidedAt: new Date(),
+      })
+      .where(eq(gates.id, data.gateId))
+      .returning();
+    if (data.decision === "conditionally_approved") {
+      await tx.insert(correctiveActions).values(
+        data.correctiveActions.map((ca) => ({
+          gateId: data.gateId,
+          description: ca.description,
+          dueDate: ca.dueDate,
+        })),
+      );
+    }
+    await recordAudit(tx, {
+      actorId: actor.id,
+      action: "gate.decide",
+      entityType: "gate",
+      entityId: data.gateId,
       before,
       after,
     });
