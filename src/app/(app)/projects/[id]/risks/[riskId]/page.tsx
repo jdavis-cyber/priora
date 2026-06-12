@@ -1,13 +1,18 @@
 import { eq } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import { notFound } from "next/navigation";
 import { db } from "@/db";
 import {
   controls,
+  riskAcceptances,
   riskControlLinks,
   risks,
   soaEntries,
   users,
 } from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { can } from "@/modules/identity/rbac";
+import { AcceptRiskForm } from "@/app/(app)/risks/accept-risk-form";
 import { RiskBadge } from "@/app/(app)/risks/risk-badge";
 import { RiskForm } from "@/app/(app)/risks/risk-form";
 
@@ -32,6 +37,15 @@ export default async function RiskDetailPage(props: {
     .select({ soaEntryId: riskControlLinks.soaEntryId })
     .from(riskControlLinks)
     .where(eq(riskControlLinks.riskId, riskId));
+
+  const session = await auth();
+  const canAccept = !!session?.user && can(session.user.role, "risk.accept");
+  const acceptors = alias(users, "acceptors");
+  const acceptances = await db
+    .select({ acceptance: riskAcceptances, acceptorName: acceptors.name })
+    .from(riskAcceptances)
+    .innerJoin(acceptors, eq(riskAcceptances.acceptedById, acceptors.id))
+    .where(eq(riskAcceptances.riskId, riskId));
 
   return (
     <div className="space-y-4">
@@ -60,7 +74,26 @@ export default async function RiskDetailPage(props: {
           soaEntryIds: linkRows.map((l) => l.soaEntryId),
         }}
       />
-      {/* Risk acceptance section lands in Task 9 */}
+      <section className="space-y-3">
+        <h2 className="font-medium">Risk Acceptance</h2>
+        {acceptances.map((a) => (
+          <div
+            key={a.acceptance.id}
+            className="rounded border border-zinc-800 p-3 text-sm"
+          >
+            <p>{a.acceptance.rationale}</p>
+            <p className="mt-1 text-zinc-500">
+              Accepted by {a.acceptorName} on{" "}
+              {a.acceptance.acceptedAt.toISOString().slice(0, 10)}
+              {a.acceptance.reviewBy &&
+                ` · review by ${a.acceptance.reviewBy.toISOString().slice(0, 10)}`}
+            </p>
+          </div>
+        ))}
+        {risk.status !== "accepted" && canAccept && (
+          <AcceptRiskForm riskId={risk.id} />
+        )}
+      </section>
     </div>
   );
 }

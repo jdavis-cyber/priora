@@ -1,10 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { db } from "@/db";
 import { auth } from "@/lib/auth";
 import { can } from "@/modules/identity/rbac";
 import {
+  acceptRiskRecord,
   createRiskRecord,
   riskBaseSchema,
   riskUpdateSchema,
@@ -59,6 +61,34 @@ export async function updateRisk(
   if (!parsed.success) return { ok: false, error: "Invalid input" };
   await updateRiskRecord(db, session.user.id, riskId, parsed.data);
   revalidatePath(`/projects/${parsed.data.projectId}/risks`);
+  revalidatePath("/risks");
+  return { ok: true, riskId };
+}
+
+const acceptRiskSchema = z.object({
+  rationale: z.string().trim().min(1, "Rationale is required").max(4000),
+  reviewBy: z.coerce.date().optional(),
+});
+
+export async function acceptRisk(
+  riskId: string,
+  formData: FormData,
+): Promise<RiskActionResult> {
+  const session = await auth();
+  if (!session?.user) return { ok: false, error: "Not authenticated" };
+  if (!can(session.user.role, "risk.accept")) {
+    return {
+      ok: false,
+      error: "Only an accepting authority may accept residual risk.",
+    };
+  }
+  const parsed = acceptRiskSchema.safeParse({
+    rationale: formData.get("rationale"),
+    reviewBy: formData.get("reviewBy") || undefined,
+  });
+  if (!parsed.success)
+    return { ok: false, error: "A written rationale is required." };
+  await acceptRiskRecord(db, session.user.id, riskId, parsed.data);
   revalidatePath("/risks");
   return { ok: true, riskId };
 }
