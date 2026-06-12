@@ -1,9 +1,13 @@
 // NFR-01 read side — keyset-paginated audit browsing. Read-only by construction.
-import { and, desc, eq, gte, lt, lte, or, type SQL } from "drizzle-orm";
+import { and, desc, eq, gte, lt, lte, or, sql, type SQL } from "drizzle-orm";
 import type { Db } from "@/db";
 import { auditLog, users } from "@/db/schema";
 
-export type AuditCursor = { createdAt: string; id: string }; // ISO timestamp + row id tiebreak
+// Cursor timestamps are microsecond-precise UTC strings rendered by Postgres
+// (to_char ... .US), NOT JS Dates: a Date round-trip truncates to milliseconds,
+// which skips/duplicates rows whenever an append-heavy log writes several
+// entries in the same millisecond.
+export type AuditCursor = { createdAt: string; id: string }; // µs-precise UTC timestamp + row id tiebreak
 
 export type AuditFilter = {
   actorId?: string;
@@ -49,7 +53,9 @@ export async function queryAuditLog(db: Db, filter: AuditFilter): Promise<AuditP
   if (filter.from) conditions.push(gte(auditLog.createdAt, filter.from));
   if (filter.to) conditions.push(lte(auditLog.createdAt, filter.to));
   if (filter.cursor) {
-    const at = new Date(filter.cursor.createdAt);
+    // Parse the µs-precise UTC string back to timestamptz inside Postgres so
+    // no precision is lost client-side.
+    const at = sql`(${filter.cursor.createdAt}::timestamp at time zone 'UTC')`;
     conditions.push(
       or(
         lt(auditLog.createdAt, at),
@@ -62,6 +68,7 @@ export async function queryAuditLog(db: Db, filter: AuditFilter): Promise<AuditP
     .select({
       id: auditLog.id,
       createdAt: auditLog.createdAt,
+      createdAtMicros: sql<string>`to_char(${auditLog.createdAt} at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US')`,
       actorEmail: users.email,
       action: auditLog.action,
       entityType: auditLog.entityType,
@@ -74,10 +81,18 @@ export async function queryAuditLog(db: Db, filter: AuditFilter): Promise<AuditP
     .limit(limit + 1); // sentinel row reveals whether a next page exists
 
   const hasMore = rows.length > limit;
-  const entries = hasMore ? rows.slice(0, limit) : rows;
-  const last = entries[entries.length - 1];
+  const page = hasMore ? rows.slice(0, limit) : rows;
+  const last = page[page.length - 1];
   return {
-    entries,
-    nextCursor: hasMore && last ? { createdAt: last.createdAt.toISOString(), id: last.id } : null,
+    entries: page.map((r) => ({
+      id: r.id,
+      createdAt: r.createdAt,
+      actorEmail: r.actorEmail,
+      action: r.action,
+      entityType: r.entityType,
+      entityId: r.entityId,
+    })),
+    nextCursor:
+      hasMore && last ? { createdAt: last.createdAtMicros, id: last.id } : null,
   };
 }
