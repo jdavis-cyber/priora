@@ -1,11 +1,12 @@
 // NFR-01 (read side) — the audit trail is browsable: filterable and
 // cursor-paginated without skipping or duplicating rows.
 import { randomUUID } from "node:crypto";
+import { sql } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { db } from "@/db";
-import { users } from "@/db/schema";
+import { auditLog, users } from "@/db/schema";
 import { recordAudit } from "@/modules/audit/record";
-import { queryAuditLog } from "./audit-query";
+import { type AuditCursor, queryAuditLog } from "./audit-query";
 
 describe("queryAuditLog", () => {
   it("filters by action and paginates by cursor without overlap", async () => {
@@ -68,5 +69,35 @@ describe("queryAuditLog", () => {
       limit: 10,
     });
     expect(miss.entries.length).toBe(0);
+  });
+
+  it("pages without skips or duplicates across microsecond-identical timestamps", async () => {
+    // Postgres stores audit timestamps at microsecond precision; JS Dates hold
+    // milliseconds. A cursor that round-trips through a Date silently loses
+    // sub-millisecond ordering, which skips or duplicates rows exactly when an
+    // append-heavy log writes several entries in the same millisecond (seen in
+    // CI). Pin the tie-break: identical timestamps, id as the only ordering.
+    const marker = `m5.tie.${randomUUID().slice(0, 8)}`;
+    const tiedAt = "2026-01-01T00:00:00.123456Z";
+    await db.insert(auditLog).values(
+      [0, 1, 2].map((i) => ({
+        actorId: null,
+        action: marker,
+        entityType: "m5_fixture",
+        after: { i },
+        createdAt: sql`${tiedAt}::timestamptz`,
+      })),
+    );
+
+    const seen: string[] = [];
+    let cursor: AuditCursor | undefined;
+    for (let page = 0; page < 4; page++) {
+      const res = await queryAuditLog(db, { action: marker, limit: 1, cursor });
+      seen.push(...res.entries.map((e) => e.id));
+      if (!res.nextCursor) break;
+      cursor = res.nextCursor;
+    }
+    expect(seen).toHaveLength(3);
+    expect(new Set(seen).size).toBe(3); // no overlap, no skips
   });
 });
