@@ -10,7 +10,7 @@ position in the CPMAI lifecycle (Phases I–VI, tri-state phase gates), living
 risk and control registers, hash-verified evidence, and one-click
 **Automated Evidence Package (AEP)** generation for auditors.
 
-**Status:** M2 complete — lifecycle engine live: projects with auto-bootstrapped Phases I–VI, tri-state gates, corrective actions, Gate Register. Registers (risk, SoA) land in M3.
+**Status:** M3 complete — registers live: 63-control library (ISO 42001 Annex A + NIST 800-53) with per-project SoA and mandatory N/A justification, 3×3 risk register with control linkage and residual-risk acceptance. Evidence & AEP land in M4.
 
 ## Why it exists
 
