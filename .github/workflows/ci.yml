@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           # Matches the dev machine's Node major — the package-lock is written
           # by npm 11; older npm versions reject its resolution as out-of-sync.
