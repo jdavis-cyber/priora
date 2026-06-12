@@ -8,6 +8,7 @@ import {
   controlFamily,
   soaCompleteness,
 } from "@/modules/controls/completeness";
+import { evidenceCountsBySoaEntry } from "@/modules/evidence/chain";
 import { can } from "@/modules/identity/rbac";
 import { SoaRowForm } from "./soa-row-form";
 
@@ -39,6 +40,7 @@ export default async function SoaPage(props: {
     .orderBy(controls.framework, controls.ref);
 
   const completeness = soaCompleteness(rows.map((r) => r.entry));
+  const evidenceCounts = await evidenceCountsBySoaEntry(db, projectId);
   const families = [
     ...new Set(rows.map((r) => controlFamily(r.control.framework, r.control.ref))),
   ];
@@ -111,6 +113,7 @@ export default async function SoaPage(props: {
                 <th className="py-1 pr-2">Ref</th>
                 <th className="py-1 pr-2">Control</th>
                 <th className="py-1 pr-2">Mappings</th>
+                <th className="py-1 pr-2">Evidence</th>
                 <th className="py-1">Posture</th>
               </tr>
             </thead>
@@ -132,6 +135,9 @@ export default async function SoaPage(props: {
                     ]
                       .filter(Boolean)
                       .join(" · ")}
+                  </td>
+                  <td className="py-2 pr-2 text-center">
+                    {evidenceCounts.get(entry.id) ?? 0}
                   </td>
                   <td className="py-2">
                     <SoaRowForm

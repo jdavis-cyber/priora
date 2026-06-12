@@ -90,10 +90,22 @@ export default async function ProjectDetailPage({
         </div>
         <div className="flex gap-2">
           <Link
+            href={`/projects/${project.id}/risks`}
+            className="rounded border border-zinc-700 px-3 py-2 text-sm font-medium text-blue-400 hover:bg-zinc-900"
+          >
+            Risks
+          </Link>
+          <Link
             href={`/projects/${project.id}/soa`}
             className="rounded border border-zinc-700 px-3 py-2 text-sm font-medium text-blue-400 hover:bg-zinc-900"
           >
             SoA
+          </Link>
+          <Link
+            href={`/projects/${project.id}/evidence`}
+            className="rounded border border-zinc-700 px-3 py-2 text-sm font-medium text-blue-400 hover:bg-zinc-900"
+          >
+            Evidence
           </Link>
           <Link
             href={`/projects/${project.id}/gate-register`}

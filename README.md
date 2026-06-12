@@ -10,7 +10,7 @@ position in the CPMAI lifecycle (Phases I–VI, tri-state phase gates), living
 risk and control registers, hash-verified evidence, and one-click
 **Automated Evidence Package (AEP)** generation for auditors.
 
-**Status:** M3 complete — registers live: 63-control library (ISO 42001 Annex A + NIST 800-53) with per-project SoA and mandatory N/A justification, 3×3 risk register with control linkage and residual-risk acceptance. Evidence & AEP land in M4.
+**Status:** M4 complete — Evidence Locker live: SHA-256 at ingest, tamper-detecting verification, typed traceability links, and one-click Automated Evidence Package (AEP) exports with hashed, schema-validated manifests. Mission Dashboard lands in M5.
 
 ## Why it exists
 
