@@ -7,7 +7,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "seed/**/*.test.ts"],
     exclude: ["src/**/*.integration.test.ts", "**/node_modules/**"],
   },
 });
