@@ -41,17 +41,18 @@ export function CorrectiveActionsList({
   items,
   projectId,
   canClose,
+  now,
 }: {
   items: CaView[];
   projectId: string;
   canClose: boolean;
+  now: number; // epoch ms, computed server-side — render must stay pure
 }) {
   if (items.length === 0) {
     return (
       <p className="text-sm text-zinc-500">No corrective actions recorded.</p>
     );
   }
-  const now = Date.now();
   return (
     <table className="w-full border-collapse text-sm">
       <thead>

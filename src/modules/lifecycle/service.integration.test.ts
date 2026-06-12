@@ -5,7 +5,7 @@ import { randomUUID } from "node:crypto";
 import { asc, eq } from "drizzle-orm";
 import { beforeAll, describe, expect, it } from "vitest";
 import { db } from "@/db";
-import { auditLog, gates, phases, projects, users } from "@/db/schema";
+import { auditLog, gates, phases, users } from "@/db/schema";
 import type { Actor } from "./service";
 import { archiveProject, createProject, updateProject } from "./service";
 
