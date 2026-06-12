@@ -10,7 +10,7 @@ position in the CPMAI lifecycle (Phases I–VI, tri-state phase gates), living
 risk and control registers, hash-verified evidence, and one-click
 **Automated Evidence Package (AEP)** generation for auditors.
 
-**Status:** M4 complete — Evidence Locker live: SHA-256 at ingest, tamper-detecting verification, typed traceability links, and one-click Automated Evidence Package (AEP) exports with hashed, schema-validated manifests. Mission Dashboard lands in M5.
+**Status:** M5 complete — Mission Dashboard, demo seed (Sentinel / Cartographer / Ledger), Playwright e2e gating every PR. Next: M6 hosted demo.
 
 ## Why it exists
 
