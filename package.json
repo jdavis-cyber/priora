@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "seed": "tsx seed/index.ts",
-    "seed:controls": "tsx seed/seed-controls.ts"
+    "seed:controls": "tsx seed/seed-controls.ts",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "archiver": "7.0.1",
@@ -29,6 +30,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/adm-zip": "0.5.8",
     "@types/archiver": "6.0.4",

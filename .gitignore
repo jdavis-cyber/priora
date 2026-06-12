@@ -44,3 +44,7 @@ next-env.d.ts
 # Local-fs storage driver root (contract §4) — contents never committed
 var/storage/*
 !var/storage/.gitkeep
+
+# Playwright
+/test-results/
+/playwright-report/
