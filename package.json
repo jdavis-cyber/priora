@@ -17,7 +17,7 @@
     "seed:controls": "tsx seed/seed-controls.ts"
   },
   "dependencies": {
-    "archiver": "8.0.0",
+    "archiver": "7.0.1",
     "bcryptjs": "3.0.3",
     "dotenv": "17.4.2",
     "drizzle-orm": "0.45.2",
@@ -31,7 +31,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/adm-zip": "0.5.8",
-    "@types/archiver": "8.0.0",
+    "@types/archiver": "6.0.4",
     "@types/node": "^25",
     "@types/pg": "8.20.0",
     "@types/react": "^19",
