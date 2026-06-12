@@ -9,8 +9,9 @@ touches a requirement. IDs carry over from SRD v3.0 (FR-xx) and MTP v1.0
 | M0-01 | Spec §7 | CI gates every merge (typecheck, lint, test, drift, build, secret scan) | `.github/workflows/ci.yml` | the pipeline itself | ✅ M0 |
 | M0-02 | Spec §7 | Commits signed and verified | repo config + branch protection | `gh api .../commits/main --jq .commit.verification.verified` | ✅ M0 |
 | M0-03 | Spec §7 | Schema changes require committed migrations | `db:check` script | CI drift step | ✅ M0 |
-| FR-05 | SRD 3.2 | 6-phase CPMAI linear workflow enforcement | `modules/lifecycle` (M2) | — | ⬜ M2 |
-| FR-06 | SRD 3.2 | Gate locking until authorized sign-off | `modules/lifecycle` (M2) | — | ⬜ M2 |
+| FR-05 | SRD 3.2 | 6-phase CPMAI linear workflow enforcement | `modules/lifecycle` | `src/modules/lifecycle/rules.test.ts` (TC-005, TC-007), `src/modules/lifecycle/service.integration.test.ts`, `src/modules/lifecycle/phase-advance.integration.test.ts` (I→VI walk) | ✅ M2 |
+| FR-06 | SRD 3.2 | Gate locking until authorized sign-off | `modules/lifecycle` | `src/modules/lifecycle/rules.test.ts` (TC-006, TC-008, TC-009), `src/modules/lifecycle/gate-decision.integration.test.ts` | ✅ M2 |
+| FR-07 | SRD 3.2 | Material Change Evaluation (lifecycle re-entry on material change) | — | — | ⬜ v2 — deliberately deferred per spec §6; recorded here so the requirement is not silently dropped |
 | FR-09 | SRD 3.3 | Risk register with control linkage | `modules/risk` (M3) | — | ⬜ M3 |
 | FR-10 | SRD 3.3 | SoA toggles with mandatory justification | `modules/controls` (M3) | — | ⬜ M3 |
 | FR-13/14 | SRD 3.4 | Evidence ingest with SHA-256 integrity | `modules/evidence` (M4) | — | ⬜ M4 |
