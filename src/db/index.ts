@@ -18,4 +18,7 @@ const pool = new Pool({ connectionString });
 
 export const db = drizzle(pool, { schema });
 
-export type Db = typeof db;
+// Db accepts the root handle OR a transaction handle, so helpers like
+// recordAudit work identically inside db.transaction() blocks.
+type Tx = Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
+export type Db = typeof db | Tx;
