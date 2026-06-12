@@ -37,6 +37,11 @@ export function PhaseStepper({ phases }: { phases: StepperPhase[] }) {
               <div
                 className={`mx-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold ${STATUS_STYLES[p.status]}`}
                 title={`${PHASE_NAMES[p.phaseNumber]} — ${p.status.replace("_", " ")}`}
+                data-testid={
+                  p.status === "in_progress" || p.status === "awaiting_gate"
+                    ? "phase-step-current"
+                    : undefined
+                }
               >
                 {ROMAN[i]}
               </div>

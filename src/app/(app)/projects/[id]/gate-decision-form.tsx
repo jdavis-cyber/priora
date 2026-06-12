@@ -27,6 +27,7 @@ export function GateDecisionForm({
   return (
     <form
       action={formAction}
+      data-testid="gate-decide-form"
       className="rounded border border-zinc-800 bg-zinc-900 p-4"
     >
       <h3 className="mb-3 text-sm font-semibold">
