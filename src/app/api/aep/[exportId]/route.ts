@@ -27,7 +27,17 @@ export async function GET(
     .where(eq(aepExports.id, parsed.data));
   if (!row) return new NextResponse("Not found", { status: 404 });
 
-  const data = await storage.get(row.storagePath);
+  let data: Buffer;
+  try {
+    data = await storage.get(row.storagePath);
+  } catch {
+    // Export row exists but the package bytes are gone from the storage root
+    // (e.g. relocated storage, pruned volume). 410, not a server error.
+    return new NextResponse(
+      "Package bytes are no longer available in storage",
+      { status: 410 },
+    );
+  }
   return new NextResponse(new Uint8Array(data), {
     headers: {
       "Content-Type": "application/zip",
