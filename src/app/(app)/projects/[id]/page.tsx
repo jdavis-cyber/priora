@@ -144,6 +144,10 @@ export default async function ProjectDetailPage({
           items={caViews}
           projectId={project.id}
           canClose={can(role, "project.edit")}
+          // Server component renders once per request — a request-time clock for
+          // overdue highlighting is intentional, not a purity hazard.
+          // eslint-disable-next-line react-hooks/purity
+          now={Date.now()}
         />
       </section>
     </div>
