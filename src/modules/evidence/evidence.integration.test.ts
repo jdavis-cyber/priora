@@ -7,14 +7,7 @@ import path from "node:path";
 import { desc, eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { db } from "@/db";
-import {
-  auditLog,
-  evidenceArtifacts,
-  evidenceLinks,
-  phases,
-  projects,
-  users,
-} from "@/db/schema";
+import { auditLog, phases, projects, users } from "@/db/schema";
 import { createLocalStorage, type Storage } from "@/lib/storage";
 import { computeSha256 } from "./hash";
 import { ingestEvidence } from "./ingest";
