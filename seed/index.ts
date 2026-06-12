@@ -7,6 +7,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "../src/db/schema";
 import { appMeta, users } from "../src/db/schema";
+import { seedDemo } from "./demo";
 import { seedControls } from "./seed-controls";
 
 const SEED_VERSION = "1";
@@ -49,10 +50,11 @@ const TEST_USERS = [
 async function main() {
   const profile = parseProfile(process.argv.slice(2));
   if (profile === "demo") {
-    console.error(
-      "demo profile lands in M5 (3 storytelling projects). Use --profile test.",
-    );
-    process.exit(1);
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const db = drizzle(pool, { schema });
+    await seedDemo(db);
+    await pool.end();
+    return;
   }
 
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
