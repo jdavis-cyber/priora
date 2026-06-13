@@ -1,7 +1,14 @@
 // RBAC matrix per domain contract §3 — aligned to the playbook's RACI (Appendix A).
 // Reads are role-unrestricted in v1; can() governs MUTATING actions only.
 import { describe, expect, it } from "vitest";
-import { ALL_ACTIONS, can, type Action, type Role } from "./rbac";
+import {
+  ALL_ACTIONS,
+  ROLE_LABELS,
+  can,
+  roleLabel,
+  type Action,
+  type Role,
+} from "./rbac";
 
 const expectExactly = (role: Role, allowed: Action[]) => {
   for (const action of ALL_ACTIONS) {
@@ -43,5 +50,33 @@ describe("can(role, action)", () => {
 
   it("auditor is read-only — blocked from every mutating action", () => {
     expectExactly("auditor", []);
+  });
+});
+
+describe("roleLabel(role)", () => {
+  const ROLES: Role[] = [
+    "governance_lead",
+    "executive_sponsor",
+    "program_manager",
+    "ml_engineer",
+    "risk_officer",
+    "auditor",
+  ];
+
+  it("renders Title Case with spaces, never the raw enum", () => {
+    expect(roleLabel("governance_lead")).toBe("Governance Lead");
+    expect(roleLabel("executive_sponsor")).toBe("Executive Sponsor");
+    expect(roleLabel("risk_officer")).toBe("Risk Officer");
+  });
+
+  it("keeps the ML acronym uppercase (not naive title-casing)", () => {
+    expect(roleLabel("ml_engineer")).toBe("ML Engineer");
+  });
+
+  it("has a label for every role, none containing an underscore", () => {
+    for (const role of ROLES) {
+      expect(ROLE_LABELS[role], role).toBeTruthy();
+      expect(roleLabel(role)).not.toContain("_");
+    }
   });
 });

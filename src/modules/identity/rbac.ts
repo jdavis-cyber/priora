@@ -25,6 +25,24 @@ export type Role =
   | "risk_officer"
   | "auditor";
 
+/**
+ * Human-readable role titles for display. The raw enum is for storage/logic only;
+ * never render it directly. An explicit map (not naive title-casing) so "ml_engineer"
+ * reads "ML Engineer", not "Ml Engineer".
+ */
+export const ROLE_LABELS: Record<Role, string> = {
+  governance_lead: "Governance Lead",
+  executive_sponsor: "Executive Sponsor",
+  program_manager: "Program Manager",
+  ml_engineer: "ML Engineer",
+  risk_officer: "Risk Officer",
+  auditor: "Auditor",
+};
+
+export function roleLabel(role: Role): string {
+  return ROLE_LABELS[role];
+}
+
 export const ALL_ACTIONS: readonly Action[] = [
   "project.create",
   "project.edit",

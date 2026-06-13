@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
+import { roleLabel, type Role } from "@/modules/identity/rbac";
 
 const NAV = [
   { href: "/", label: "Dashboard" },
@@ -41,7 +42,9 @@ export default async function AppLayout({
         </nav>
         <div className="mt-auto border-t border-zinc-800 pt-4">
           <p className="text-sm text-zinc-200">{session.user.name}</p>
-          <p className="text-xs text-zinc-500">{session.user.role}</p>
+          <p className="text-xs text-zinc-500">
+            {roleLabel(session.user.role as Role)}
+          </p>
           <form
             action={async () => {
               "use server";
