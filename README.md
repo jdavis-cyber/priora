@@ -1,5 +1,7 @@
 # Priora
 
+[![ci](https://github.com/jdavis-cyber/priora/actions/workflows/ci.yml/badge.svg)](https://github.com/jdavis-cyber/priora/actions/workflows/ci.yml)
+
 > **Priora** (pree-OR-uh, Latin: *"the things that come before"*) — an AI
 > lifecycle governance platform operationalizing
 > *The Decisions That Come Before Scale: An AI Lifecycle Playbook for
@@ -10,7 +12,27 @@ position in the CPMAI lifecycle (Phases I–VI, tri-state phase gates), living
 risk and control registers, hash-verified evidence, and one-click
 **Automated Evidence Package (AEP)** generation for auditors.
 
-**Status:** M5 complete — Mission Dashboard, demo seed (Sentinel / Cartographer / Ledger), Playwright e2e gating every PR. Next: M6 hosted demo.
+**Status:** v1 shipped — live demo below. M0–M6 complete.
+
+![Priora Mission Dashboard](docs/assets/dashboard.png)
+
+## Live demo
+
+**URL:** <https://priora-gules.vercel.app>  ·  Data resets daily at 09:00 UTC. All content is fictional.
+
+| Role | Login | Password |
+|---|---|---|
+| Governance Lead | `avery.cole@priora.demo` | `demo-priora-2026` |
+| Executive Sponsor | `morgan.reyes@priora.demo` | `demo-priora-2026` |
+| Program Manager | `priya.natarajan@priora.demo` | `demo-priora-2026` |
+| ML Engineer | `felix.okafor@priora.demo` | `demo-priora-2026` |
+| Risk Officer | `dana.whitfield@priora.demo` | `demo-priora-2026` |
+| Auditor (read-only) | `sam.aldous@priora.demo` | `demo-priora-2026` |
+
+Suggested tour: log in as **Governance Lead** → Mission Dashboard → open a
+project → Gate Register → Evidence Locker → "Verify Integrity" → generate an
+AEP. Then log in as **Auditor** and confirm everything is visible but nothing
+is editable.
 
 ## Why it exists
 
@@ -43,7 +65,7 @@ and [ADR-0002](docs/adr/0002-technology-stack.md).
 | **v2** | MRP wizard, risk-acceptance workflow, reciprocity & inheritance register, governance cadence calendar, material change evaluation, maturity scoring |
 | **v3 (tracking DoD CSRMC as it matures)** | Continuous Compliance Validation (CCV) engine, Automated Control Validation Ruleset (ACVR), telemetry ingestion, incident ticketing, supplier & competency management |
 
-## Local development
+## Run it locally
 
 ```bash
 cp .env.example .env
@@ -54,3 +76,6 @@ npm run dev
 ```
 
 `npm test` · `npm run typecheck` · `npm run lint` · `npm run db:check`
+
+To run the demo profile locally: `APP_PROFILE=demo npm run dev` (banner on, user
+management disabled). Seed it first: `npm run seed -- --profile demo`.

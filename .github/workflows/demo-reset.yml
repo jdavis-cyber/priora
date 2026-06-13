@@ -1,0 +1,28 @@
+name: demo-reset
+
+on:
+  schedule:
+    - cron: "0 9 * * *" # 09:00 UTC daily — demo data lifetime is < 24h by design
+  workflow_dispatch: {} # manual reset for testing / incident response
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 25
+          cache: npm
+      - run: npm ci
+      - name: Apply migrations (idempotent)
+        run: npm run db:migrate
+        env:
+          DATABASE_URL: ${{ secrets.DEMO_DATABASE_URL }}
+      - name: Reset demo seed (DB rows + Blob evidence bytes)
+        run: npm run seed -- --profile demo
+        env:
+          DATABASE_URL: ${{ secrets.DEMO_DATABASE_URL }}
+          APP_PROFILE: demo
+          STORAGE_DRIVER: vercel_blob
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.DEMO_BLOB_READ_WRITE_TOKEN }}
