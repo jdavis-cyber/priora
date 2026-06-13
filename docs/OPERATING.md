@@ -13,6 +13,7 @@ Open it in any browser and log in:
 
 | Role | Login | Password |
 |---|---|---|
+| **You (personal — same view as Governance Lead)** | `jdavis.cyber@gmail.com` | `demo-priora-2026` |
 | Governance Lead | `avery.cole@priora.demo` | `demo-priora-2026` |
 | Executive Sponsor | `morgan.reyes@priora.demo` | `demo-priora-2026` |
 | Program Manager | `priya.natarajan@priora.demo` | `demo-priora-2026` |
@@ -21,6 +22,11 @@ Open it in any browser and log in:
 | Auditor (read-only) | `sam.aldous@priora.demo` | `demo-priora-2026` |
 
 That is the whole thing. No install, no setup. Bookmark the URL.
+
+**Sign in as yourself** with `jdavis.cyber@gmail.com` / `demo-priora-2026` — it's
+seeded as a Governance Lead, so your screen is identical to Avery Cole's (full
+access to every project, gate, risk, and evidence record). It survives the daily
+reset.
 
 **Forgot the URL?** Three ways back to it:
 
