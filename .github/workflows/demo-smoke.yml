@@ -1,0 +1,41 @@
+name: demo-smoke
+
+on:
+  deployment_status: {} # fires when Vercel's Git integration reports a deployment
+  schedule:
+    - cron: "30 9 * * *" # daily, 30 min after the seed reset
+  workflow_dispatch: {}
+
+jobs:
+  smoke:
+    # For deployment events, only test successful production deployments.
+    if: >
+      github.event_name != 'deployment_status' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve target URL
+        id: target
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DEPLOY_URL: ${{ github.event.deployment_status.environment_url }}
+          VAR_URL: ${{ vars.DEMO_URL }}
+        run: |
+          if [ "$EVENT_NAME" = "deployment_status" ]; then
+            echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
+          else
+            echo "url=$VAR_URL" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Root renders and identifies as Priora
+        env:
+          URL: ${{ steps.target.outputs.url }}
+        run: |
+          body=$(curl -fsSL --max-time 30 "$URL")
+          echo "$body" | grep -q "Priora"
+      - name: Login page renders 200
+        env:
+          URL: ${{ steps.target.outputs.url }}
+        run: |
+          code=$(curl -sL -o /dev/null -w '%{http_code}' --max-time 30 "$URL/login")
+          test "$code" = "200"
