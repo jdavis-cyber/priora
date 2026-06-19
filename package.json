@@ -41,7 +41,7 @@
     "@types/react-dom": "^19",
     "adm-zip": "0.5.17",
     "drizzle-kit": "0.31.10",
-    "eslint": "^9",
+    "eslint": "^10",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
     "tsx": "4.22.4",
