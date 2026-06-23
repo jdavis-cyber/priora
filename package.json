@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@vercel/blob": "2.4.1",
-    "archiver": "7.0.1",
+    "archiver": "8.0.0",
     "bcryptjs": "3.0.3",
     "dotenv": "17.4.2",
     "drizzle-orm": "0.45.2",
@@ -34,7 +34,7 @@
     "@playwright/test": "1.61.0",
     "@tailwindcss/postcss": "^4",
     "@types/adm-zip": "0.5.8",
-    "@types/archiver": "6.0.4",
+    "@types/archiver": "8.0.0",
     "@types/node": "^26",
     "@types/pg": "8.20.0",
     "@types/react": "^19",
