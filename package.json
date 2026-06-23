@@ -18,16 +18,16 @@
     "e2e": "playwright test"
   },
   "dependencies": {
-    "@vercel/blob": "2.4.0",
+    "@vercel/blob": "2.4.1",
     "archiver": "7.0.1",
     "bcryptjs": "3.0.3",
     "dotenv": "17.4.2",
     "drizzle-orm": "0.45.2",
     "next": "16.2.9",
     "next-auth": "5.0.0-beta.31",
-    "pg": "8.21.0",
+    "pg": "8.22.0",
     "react": "19.2.7",
-    "react-dom": "19.2.4",
+    "react-dom": "19.2.7",
     "zod": "4.4.3"
   },
   "devDependencies": {
