@@ -18,7 +18,7 @@
     "e2e": "playwright test"
   },
   "dependencies": {
-    "@vercel/blob": "2.4.0",
+    "@vercel/blob": "2.4.1",
     "archiver": "7.0.1",
     "bcryptjs": "3.0.3",
     "dotenv": "17.4.2",
