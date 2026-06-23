@@ -30,7 +30,7 @@ risk and control registers, hash-verified evidence, and one-click
 | Shipped scope | **v1 (M1–M6) complete** · live hosted demo |
 | Codebase | **~8,300 LOC** across **107 TypeScript files** |
 | Domain modules | **7** requirement-traced: lifecycle, risk, controls, evidence, identity, audit, dashboard |
-| Test coverage | **129 test cases** across **38 unit + 6 e2e** specs (TDD, requirement-named) |
+| Test coverage | **129 test cases** across **32 unit + 6 e2e** specs (TDD, requirement-named) |
 | Evidence integrity | **SHA-256** hashed, one-click **AEP** export |
 | Engineering rigor | **3 ADRs**, RTM, signed commits, protected `main`, CI-gated merges |
 
@@ -65,7 +65,7 @@ audit readiness is a button, not a quarter.
 
 ```mermaid
 flowchart TB
-    subgraph Client [Next.js 15 App Router · TypeScript · RBAC]
+    subgraph Client [Next.js 16 App Router · TypeScript · RBAC]
         Dash[Mission Dashboard]
         Gate[Gate Register]
         Lock[Evidence Locker]
@@ -94,7 +94,7 @@ flowchart TB
     style AEP fill:#0A66C2,stroke:#06408a,color:#fff
 ```
 
-Modular monolith — Next.js 15 (App Router) + TypeScript, PostgreSQL +
+Modular monolith — Next.js 16 (App Router) + TypeScript, PostgreSQL +
 Drizzle. Domain logic lives in `src/modules/*` as framework-independent,
 requirement-traced functions. See [ADR-0001](docs/adr/0001-modular-monolith-supersedes-legacy-architectures.md)
 and [ADR-0002](docs/adr/0002-technology-stack.md).
