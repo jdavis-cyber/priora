@@ -1,11 +1,20 @@
 # Priora
 
 [![ci](https://github.com/jdavis-cyber/priora/actions/workflows/ci.yml/badge.svg)](https://github.com/jdavis-cyber/priora/actions/workflows/ci.yml)
+[![live demo](https://img.shields.io/badge/Live%20demo-priora--gules.vercel.app-0A66C2)](https://priora-gules.vercel.app)
+[![governance](https://img.shields.io/badge/Governance-CPMAI%20%2F%20ISO%2042001%20%2F%20NIST%20AI%20RMF-6f42c1)](#why-it-exists)
+[![approach](https://img.shields.io/badge/Approach-Governance--as--Code-111)](#architecture)
 
 > **Priora** (pree-OR-uh, Latin: *"the things that come before"*) — an AI
 > lifecycle governance platform operationalizing
 > *The Decisions That Come Before Scale: An AI Lifecycle Playbook for
 > Regulated Environments*.
+
+> ### For hiring managers — what this demonstrates
+> Priora is a full-stack, shipped **AI governance platform** that turns CPMAI lifecycle gates, risk/control registers, and hash-verified evidence into a single system of record — with **one-click auditor evidence packages**. It's proof I can do the whole arc: **build the systems, govern the systems, and defend the evidence.** The repo itself practices the phase-gate discipline the product enforces (signed commits, protected `main`, CI-gated merges, ADRs, requirement-traced TDD).
+>
+> **Bridges:** AI lifecycle governance · ISO/IEC 42001 + NIST AI RMF + CPMAI · security/compliance/audit · hands-on full-stack GenAI engineering · governance-as-code.
+> **Try it:** [live demo](https://priora-gules.vercel.app) (logins below) · **More:** [secondorderstrategy.com](https://secondorderstrategy.com) · author: Jerome Davis
 
 Priora is a single system of record for AI governance: every AI project's
 position in the CPMAI lifecycle (Phases I–VI, tri-state phase gates), living
@@ -13,6 +22,17 @@ risk and control registers, hash-verified evidence, and one-click
 **Automated Evidence Package (AEP)** generation for auditors.
 
 **Status:** v1 shipped — live demo below. M0–M6 complete.
+
+## By the numbers
+
+| Signal | Value |
+| --- | --- |
+| Shipped scope | **v1 (M1–M6) complete** · live hosted demo |
+| Codebase | **~8,300 LOC** across **107 TypeScript files** |
+| Domain modules | **7** requirement-traced: lifecycle, risk, controls, evidence, identity, audit, dashboard |
+| Test coverage | **129 test cases** across **32 unit + 6 e2e** specs (TDD, requirement-named) |
+| Evidence integrity | **SHA-256** hashed, one-click **AEP** export |
+| Engineering rigor | **3 ADRs**, RTM, signed commits, protected `main`, CI-gated merges |
 
 ![Priora Mission Dashboard](docs/assets/dashboard.png)
 
@@ -43,7 +63,38 @@ audit readiness is a button, not a quarter.
 
 ## Architecture
 
-Modular monolith — Next.js 15 (App Router) + TypeScript, PostgreSQL +
+```mermaid
+flowchart TB
+    subgraph Client [Next.js 16 App Router · TypeScript · RBAC]
+        Dash[Mission Dashboard]
+        Gate[Gate Register]
+        Lock[Evidence Locker]
+    end
+
+    subgraph Domain [Domain Modules · src/modules · requirement-traced]
+        direction LR
+        Life[lifecycle<br/>CPMAI I–VI gates]
+        Risk[risk<br/>3×3 · 7 domains]
+        Ctrl[controls<br/>SoA]
+        Evix[evidence<br/>SHA-256]
+        Idn[identity<br/>RBAC]
+        Aud[(audit<br/>append-only)]
+    end
+
+    Client --> Domain
+    Life --> Gate
+    Evix --> Lock
+    Domain --> DB[(PostgreSQL 17<br/>Drizzle ORM)]
+    Domain --> Aud
+    Lock -->|Verify Integrity| Evix
+    Lock --> AEP[[Automated Evidence Package<br/>one-click, auditor-ready]]
+
+    style Domain fill:#6f42c1,stroke:#4b2a86,color:#fff
+    style Aud fill:#1a7f37,stroke:#0b5023,color:#fff
+    style AEP fill:#0A66C2,stroke:#06408a,color:#fff
+```
+
+Modular monolith — Next.js 16 (App Router) + TypeScript, PostgreSQL +
 Drizzle. Domain logic lives in `src/modules/*` as framework-independent,
 requirement-traced functions. See [ADR-0001](docs/adr/0001-modular-monolith-supersedes-legacy-architectures.md)
 and [ADR-0002](docs/adr/0002-technology-stack.md).
@@ -79,3 +130,9 @@ npm run dev
 
 To run the demo profile locally: `APP_PROFILE=demo npm run dev` (banner on, user
 management disabled). Seed it first: `npm run seed -- --profile demo`.
+
+## About the author
+
+Built by **Jerome Davis** — a governance operator bridging DoD/federal program execution, security/compliance/audit, ISO 42001/27001 + NIST AI RMF, and hands-on GenAI engineering. Priora is part of a portfolio demonstrating governance-as-code end to end.
+
+🔗 **[secondorderstrategy.com](https://secondorderstrategy.com)** · companion projects: [Lliam-GOV](https://github.com/jdavis-cyber/lliam-gov) (governed AI agent) · [DoW AI PM Builder Template](https://github.com/jdavis-cyber/dow-ai-pm-builder-template) (governed AI software factory)
