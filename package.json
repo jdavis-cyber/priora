@@ -31,7 +31,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@playwright/test": "1.61.0",
+    "@playwright/test": "1.61.1",
     "@tailwindcss/postcss": "^4",
     "@types/adm-zip": "0.5.8",
     "@types/archiver": "6.0.4",
@@ -39,7 +39,7 @@
     "@types/pg": "8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "adm-zip": "0.5.17",
+    "adm-zip": "0.5.18",
     "drizzle-kit": "0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
